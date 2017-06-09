@@ -27,11 +27,14 @@ namespace TataApp.Backend.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Employee employee = await db.Employees.FindAsync(id);
+
+            var employee = await db.Employees.FindAsync(id);
+
             if (employee == null)
             {
                 return HttpNotFound();
             }
+
             return View(employee);
         }
 
@@ -177,7 +180,9 @@ namespace TataApp.Backend.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Employee employee = await db.Employees.FindAsync(id);
+
+            var employee = await db.Employees.FindAsync(id);
+
             if (employee == null)
             {
                 return HttpNotFound();
@@ -190,10 +195,16 @@ namespace TataApp.Backend.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> DeleteConfirmed(int id)
         {
-            Employee employee = await db.Employees.FindAsync(id);
+            var employee = await db.Employees.FindAsync(id);
             db.Employees.Remove(employee);
-            await db.SaveChangesAsync();
-            return RedirectToAction("Index");
+            var response = await DBHelper.SaveChanges(db);
+            if (response.Succeeded)
+            {
+                return RedirectToAction("Index");
+            }
+
+            ModelState.AddModelError(string.Empty, response.Message);
+            return View(employee);
         }
 
         protected override void Dispose(bool disposing)
