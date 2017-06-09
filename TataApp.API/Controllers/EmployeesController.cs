@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
@@ -14,9 +15,22 @@ using TataApp.Domain;
 namespace TataApp.API.Controllers
 {
     [Authorize]
+    [RoutePrefix("api/Employees")]
     public class EmployeesController : ApiController
     {
         private DataContext db = new DataContext();
+
+        [ResponseType(typeof(Employee))]
+        public async Task<IHttpActionResult> GetEmployee(int id)
+        {
+            Employee employee = await db.Employees.FindAsync(id);
+            if (employee == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(employee);
+        }
 
         // GET: api/Employees
         public IQueryable<Employee> GetEmployees()
@@ -24,11 +38,35 @@ namespace TataApp.API.Controllers
             return db.Employees;
         }
 
-        // GET: api/Employees/5
-        [ResponseType(typeof(Employee))]
-        public async Task<IHttpActionResult> GetEmployee(int id)
+        // POST: api/GetGetEmployeeByEmailOrCode
+        [HttpPost]
+        [Route("GetGetEmployeeByEmailOrCode")]
+        public async Task<IHttpActionResult> GetGetEmployeeByEmailOrCode(JObject form)
         {
-            Employee employee = await db.Employees.FindAsync(id);
+            var emailOrCode = string.Empty;
+            dynamic jsonObject = form;
+
+            try
+            {
+                emailOrCode = jsonObject.EmailOrCode.Value;
+            }
+            catch
+            {
+                return BadRequest("Incorrect call");
+            }
+
+            Employee employee = null;
+            if (emailOrCode.IndexOf('@') != -1)
+            {
+                employee = await db.Employees.Where(e => e.Email.ToLower() == emailOrCode.ToLower()).FirstOrDefaultAsync();
+            }
+            else
+            {
+                int code;
+                int.TryParse(emailOrCode, out code);
+                employee = await db.Employees.Where(e => e.EmployeeCode == code).FirstOrDefaultAsync();
+            }
+
             if (employee == null)
             {
                 return NotFound();
