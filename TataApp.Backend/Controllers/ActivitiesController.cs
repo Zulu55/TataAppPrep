@@ -9,17 +9,17 @@ using TataApp.Backend.Helpers;
 namespace TataApp.Backend.Controllers
 {
     [Authorize(Roles = "Admin")]
-    public class DocumentTypesController : Controller
+    public class ActivitiesController : Controller
     {
         private DataContextLocal db = new DataContextLocal();
 
-        // GET: DocumentTypes
+        // GET: Activities
         public async Task<ActionResult> Index()
         {
-            return View(await db.DocumentTypes.ToListAsync());
+            return View(await db.Activities.ToListAsync());
         }
 
-        // GET: DocumentTypes/Details/5
+        // GET: Activities/Details/5
         public async Task<ActionResult> Details(int? id)
         {
             if (id == null)
@@ -27,30 +27,30 @@ namespace TataApp.Backend.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var documentType = await db.DocumentTypes.FindAsync(id);
+            var activity = await db.Activities.FindAsync(id);
 
-            if (documentType == null)
+            if (activity == null)
             {
                 return HttpNotFound();
             }
 
-            return View(documentType);
+            return View(activity);
         }
 
-        // GET: DocumentTypes/Create
+        // GET: Activities/Create
         public ActionResult Create()
         {
             return View();
         }
 
-        // POST: DocumentTypes/Create
+        // POST: Activities/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create(DocumentType documentType)
+        public async Task<ActionResult> Create(Activity activity)
         {
             if (ModelState.IsValid)
             {
-                db.DocumentTypes.Add(documentType);
+                db.Activities.Add(activity);
                 var response = await DBHelper.SaveChanges(db);
                 if (response.Succeeded)
                 {
@@ -60,10 +60,10 @@ namespace TataApp.Backend.Controllers
                 ModelState.AddModelError(string.Empty, response.Message);
             }
 
-            return View(documentType);
+            return View(activity);
         }
 
-        // GET: DocumentTypes/Edit/5
+        // GET: Activities/Edit/5
         public async Task<ActionResult> Edit(int? id)
         {
             if (id == null)
@@ -71,24 +71,24 @@ namespace TataApp.Backend.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var documentType = await db.DocumentTypes.FindAsync(id);
+            var activity = await db.Activities.FindAsync(id);
 
-            if (documentType == null)
+            if (activity == null)
             {
                 return HttpNotFound();
             }
 
-            return View(documentType);
+            return View(activity);
         }
 
-        // POST: DocumentTypes/Edit/5
+        // POST: Activities/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit(DocumentType documentType)
+        public async Task<ActionResult> Edit(Activity activity)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(documentType).State = EntityState.Modified;
+                db.Entry(activity).State = EntityState.Modified;
                 var response = await DBHelper.SaveChanges(db);
                 if (response.Succeeded)
                 {
@@ -97,10 +97,10 @@ namespace TataApp.Backend.Controllers
 
                 ModelState.AddModelError(string.Empty, response.Message);
             }
-            return View(documentType);
+            return View(activity);
         }
 
-        // GET: DocumentTypes/Delete/5
+        // GET: Activities/Delete/5
         public async Task<ActionResult> Delete(int? id)
         {
             if (id == null)
@@ -108,23 +108,22 @@ namespace TataApp.Backend.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var documentType = await db.DocumentTypes.FindAsync(id);
+            var activity = await db.Activities.FindAsync(id);
 
-            if (documentType == null)
+            if (activity == null)
             {
                 return HttpNotFound();
             }
-
-            return View(documentType);
+            return View(activity);
         }
 
-        // POST: DocumentTypes/Delete/5
+        // POST: Activities/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> DeleteConfirmed(int id)
         {
-            var documentType = await db.DocumentTypes.FindAsync(id);
-            db.DocumentTypes.Remove(documentType);
+            var activity = await db.Activities.FindAsync(id);
+            db.Activities.Remove(activity);
             var response = await DBHelper.SaveChanges(db);
             if (response.Succeeded)
             {
@@ -132,7 +131,7 @@ namespace TataApp.Backend.Controllers
             }
 
             ModelState.AddModelError(string.Empty, response.Message);
-            return View(documentType);
+            return View(activity);
         }
 
         protected override void Dispose(bool disposing)
@@ -141,6 +140,7 @@ namespace TataApp.Backend.Controllers
             {
                 db.Dispose();
             }
+
             base.Dispose(disposing);
         }
     }

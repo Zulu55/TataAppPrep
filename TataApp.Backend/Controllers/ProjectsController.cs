@@ -9,17 +9,17 @@ using TataApp.Backend.Helpers;
 namespace TataApp.Backend.Controllers
 {
     [Authorize(Roles = "Admin")]
-    public class DocumentTypesController : Controller
+    public class ProjectsController : Controller
     {
         private DataContextLocal db = new DataContextLocal();
 
-        // GET: DocumentTypes
+        // GET: Projects
         public async Task<ActionResult> Index()
         {
-            return View(await db.DocumentTypes.ToListAsync());
+            return View(await db.Projects.ToListAsync());
         }
 
-        // GET: DocumentTypes/Details/5
+        // GET: Projects/Details/5
         public async Task<ActionResult> Details(int? id)
         {
             if (id == null)
@@ -27,30 +27,30 @@ namespace TataApp.Backend.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var documentType = await db.DocumentTypes.FindAsync(id);
+            var project = await db.Projects.FindAsync(id);
 
-            if (documentType == null)
+            if (project == null)
             {
                 return HttpNotFound();
             }
 
-            return View(documentType);
+            return View(project);
         }
 
-        // GET: DocumentTypes/Create
+        // GET: Projects/Create
         public ActionResult Create()
         {
             return View();
         }
 
-        // POST: DocumentTypes/Create
+        // POST: Projects/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create(DocumentType documentType)
+        public async Task<ActionResult> Create(Project project)
         {
             if (ModelState.IsValid)
             {
-                db.DocumentTypes.Add(documentType);
+                db.Projects.Add(project);
                 var response = await DBHelper.SaveChanges(db);
                 if (response.Succeeded)
                 {
@@ -60,10 +60,10 @@ namespace TataApp.Backend.Controllers
                 ModelState.AddModelError(string.Empty, response.Message);
             }
 
-            return View(documentType);
+            return View(project);
         }
 
-        // GET: DocumentTypes/Edit/5
+        // GET: Projects/Edit/5
         public async Task<ActionResult> Edit(int? id)
         {
             if (id == null)
@@ -71,24 +71,24 @@ namespace TataApp.Backend.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var documentType = await db.DocumentTypes.FindAsync(id);
+            var project = await db.Projects.FindAsync(id);
 
-            if (documentType == null)
+            if (project == null)
             {
                 return HttpNotFound();
             }
 
-            return View(documentType);
+            return View(project);
         }
 
-        // POST: DocumentTypes/Edit/5
+        // POST: Projects/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit(DocumentType documentType)
+        public async Task<ActionResult> Edit(Project project)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(documentType).State = EntityState.Modified;
+                db.Entry(project).State = EntityState.Modified;
                 var response = await DBHelper.SaveChanges(db);
                 if (response.Succeeded)
                 {
@@ -97,10 +97,11 @@ namespace TataApp.Backend.Controllers
 
                 ModelState.AddModelError(string.Empty, response.Message);
             }
-            return View(documentType);
+
+            return View(project);
         }
 
-        // GET: DocumentTypes/Delete/5
+        // GET: Projects/Delete/5
         public async Task<ActionResult> Delete(int? id)
         {
             if (id == null)
@@ -108,23 +109,23 @@ namespace TataApp.Backend.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var documentType = await db.DocumentTypes.FindAsync(id);
+            var project = await db.Projects.FindAsync(id);
 
-            if (documentType == null)
+            if (project == null)
             {
                 return HttpNotFound();
             }
 
-            return View(documentType);
+            return View(project);
         }
 
-        // POST: DocumentTypes/Delete/5
+        // POST: Projects/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> DeleteConfirmed(int id)
         {
-            var documentType = await db.DocumentTypes.FindAsync(id);
-            db.DocumentTypes.Remove(documentType);
+            var project = await db.Projects.FindAsync(id);
+            db.Projects.Remove(project);
             var response = await DBHelper.SaveChanges(db);
             if (response.Succeeded)
             {
@@ -132,7 +133,7 @@ namespace TataApp.Backend.Controllers
             }
 
             ModelState.AddModelError(string.Empty, response.Message);
-            return View(documentType);
+            return View(project);
         }
 
         protected override void Dispose(bool disposing)

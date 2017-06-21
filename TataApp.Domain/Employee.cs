@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -63,5 +64,8 @@ namespace TataApp.Domain
 
         [JsonIgnore]
         public virtual LoginType LoginType { get; set; }
+
+        [JsonIgnore]
+        public virtual ICollection<Time> Times { get; set; }
     }
 }
