@@ -1,10 +1,13 @@
-﻿using System.Data.Entity;
+﻿using System;
+using System.Collections.Generic;
+using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
+using TataApp.API.Models;
 using TataApp.Domain;
 
 namespace TataApp.API.Controllers
@@ -25,12 +28,26 @@ namespace TataApp.API.Controllers
         public async Task<IHttpActionResult> GetTime(int id)
         {
             var times = await db.Times.Where(t => t.EmployeeId == id).ToListAsync();
-            if (times == null)
+            var timesResponse = new List<TimeResponse>();
+            foreach (var time in times)
             {
-                return NotFound();
+                timesResponse.Add(new TimeResponse
+                {
+                    Activity = time.Activity,
+                    ActivityId = time.ActivityId,
+                    DateRegistered = time.DateRegistered,
+                    DateReported = time.DateReported,
+                    EmployeeId = time.EmployeeId,
+                    From = time.From,
+                    Project = time.Project,
+                    ProjectId = time.ProjectId,
+                    Remarks = time.Remarks,
+                    TimeId = time.TimeId,
+                    To = time.To,
+                });
             }
 
-            return Ok(times);
+            return Ok(timesResponse);
         }
 
         // PUT: api/Times/5
@@ -69,18 +86,95 @@ namespace TataApp.API.Controllers
         }
 
         // POST: api/Times
-        [ResponseType(typeof(Time))]
-        public async Task<IHttpActionResult> PostTime(Time time)
+        public async Task<IHttpActionResult> PostTime(NewTimeRequest request)
         {
-            if (!ModelState.IsValid)
+            Time time = null;
+
+            if (!request.IsRepeated)
             {
-                return BadRequest(ModelState);
+                time = ToTime(request);
+                db.Times.Add(time);
+            }
+            else
+            {
+                var date = request.DateReported;
+                while (date <= request.Until)
+                {
+                    var sw = false;
+
+                    if (date.DayOfWeek == DayOfWeek.Monday && request.IsRepeatMonday)
+                    {
+                        sw = true;
+                    }
+
+                    if (date.DayOfWeek == DayOfWeek.Tuesday && request.IsRepeatTuesday)
+                    {
+                        sw = true;
+                    }
+
+                    if (date.DayOfWeek == DayOfWeek.Wednesday && request.IsRepeatWednesday)
+                    {
+                        sw = true;
+                    }
+
+                    if (date.DayOfWeek == DayOfWeek.Thursday && request.IsRepeatThursday)
+                    {
+                        sw = true;
+                    }
+
+                    if (date.DayOfWeek == DayOfWeek.Friday && request.IsRepeatFriday)
+                    {
+                        sw = true;
+                    }
+
+                    if (date.DayOfWeek == DayOfWeek.Saturday && request.IsRepeatSaturday)
+                    {
+                        sw = true;
+                    }
+
+                    if (date.DayOfWeek == DayOfWeek.Sunday && request.IsRepeatSunday)
+                    {
+                        sw = true;
+                    }
+
+                    if (sw)
+                    {
+                        time = new Time
+                        {
+                            ActivityId = request.ActivityId,
+                            DateRegistered = DateTime.Now,
+                            DateReported = date,
+                            EmployeeId = request.EmployeeId,
+                            From = request.From,
+                            ProjectId = request.ProjectId,
+                            Remarks = request.Remarks,
+                            To = request.To,
+                        };
+
+                        db.Times.Add(time);
+                    }
+
+                    date = date.AddDays(1);
+                }
             }
 
-            db.Times.Add(time);
             await db.SaveChangesAsync();
+            return Ok(time);
+        }
 
-            return CreatedAtRoute("DefaultApi", new { id = time.TimeId }, time);
+        private Time ToTime(NewTimeRequest request)
+        {
+            return new Time
+            {
+                ActivityId = request.ActivityId,
+                DateRegistered = DateTime.Now,
+                DateReported = request.DateReported,
+                EmployeeId = request.EmployeeId,
+                From = request.From,
+                ProjectId = request.ProjectId,
+                Remarks = request.Remarks,
+                To = request.To,
+            };
         }
 
         // DELETE: api/Times/5
