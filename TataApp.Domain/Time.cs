@@ -46,6 +46,12 @@ namespace TataApp.Domain
         [DataType(DataType.MultilineText)]
         public string Remarks { get; set; }
 
+        [Display(Name = "Latitude")]
+        public double Latitude { get; set; }
+
+        [Display(Name = "Longitude")]
+        public double Longitude { get; set; }
+
         [JsonIgnore]
         public virtual Employee Employee { get; set; }
 

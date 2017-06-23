@@ -16,6 +16,10 @@ namespace TataApp.API.Models
 
         public DateTime To { get; set; }
 
+        public double Latitude { get; set; }
+
+        public double Longitude { get; set; }
+
         public string Remarks { get; set; }
 
         public bool IsRepeated { get; set; }

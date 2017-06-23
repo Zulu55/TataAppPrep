@@ -33,7 +33,10 @@
             @Html.DisplayNameFor(model => model.To)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Remarks)
+            @Html.DisplayNameFor(model => model.Latitude)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Longitude)
         </th>
         <th></th>
     </tr>
@@ -55,14 +58,17 @@
         <td>
             @Html.DisplayFor(modelItem => item.DateReported)
         </td>
-        <td>
+        <td width="90px">
             @Html.DisplayFor(modelItem => item.From)
         </td>
-        <td>
+        <td width="90px">
             @Html.DisplayFor(modelItem => item.To)
         </td>
         <td>
-            @Html.DisplayFor(modelItem => item.Remarks)
+            @Html.DisplayFor(modelItem => item.Latitude)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Longitude)
         </td>
         <td>
             @Html.ActionLink("Edit", "Edit", new { id=item.TimeId }) |
