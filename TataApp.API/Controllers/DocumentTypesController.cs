@@ -1,19 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
-using System.Web.Http;
-using System.Web.Http.Description;
-using TataApp.Domain;
-
-namespace TataApp.API.Controllers
+﻿namespace TataApp.API.Controllers
 {
-    [Authorize]
+    using System.Data.Entity;
+    using System.Data.Entity.Infrastructure;
+    using System.Linq;
+    using System.Net;
+    using System.Threading.Tasks;
+    using System.Web.Http;
+    using System.Web.Http.Description;
+    using TataApp.Domain;
+
     public class DocumentTypesController : ApiController
     {
         private DataContext db = new DataContext();
@@ -25,6 +20,7 @@ namespace TataApp.API.Controllers
         }
 
         // GET: api/DocumentTypes/5
+        [Authorize]
         [ResponseType(typeof(DocumentType))]
         public async Task<IHttpActionResult> GetDocumentType(int id)
         {
@@ -38,6 +34,7 @@ namespace TataApp.API.Controllers
         }
 
         // PUT: api/DocumentTypes/5
+        [Authorize]
         [ResponseType(typeof(void))]
         public async Task<IHttpActionResult> PutDocumentType(int id, DocumentType documentType)
         {
@@ -73,6 +70,7 @@ namespace TataApp.API.Controllers
         }
 
         // POST: api/DocumentTypes
+        [Authorize]
         [ResponseType(typeof(DocumentType))]
         public async Task<IHttpActionResult> PostDocumentType(DocumentType documentType)
         {
@@ -88,6 +86,7 @@ namespace TataApp.API.Controllers
         }
 
         // DELETE: api/DocumentTypes/5
+        [Authorize]
         [ResponseType(typeof(DocumentType))]
         public async Task<IHttpActionResult> DeleteDocumentType(int id)
         {

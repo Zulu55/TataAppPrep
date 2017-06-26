@@ -20,10 +20,12 @@ namespace TataApp.Domain
 
         public DbSet<Employee> Employees { get; set; }
 
-        public System.Data.Entity.DbSet<TataApp.Domain.Activity> Activities { get; set; }
+        public DbSet<Activity> Activities { get; set; }
 
-        public System.Data.Entity.DbSet<TataApp.Domain.Project> Projects { get; set; }
+        public DbSet<Project> Projects { get; set; }
 
-        public System.Data.Entity.DbSet<TataApp.Domain.Time> Times { get; set; }
+        public DbSet<Time> Times { get; set; }
+
+        public DbSet<Location> Locations { get; set; }
     }
 }
