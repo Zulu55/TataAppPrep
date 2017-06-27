@@ -9,6 +9,7 @@
     using System;
     using System.Data;
     using System.Data.Entity;
+    using System.Data.Entity.Validation;
     using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
@@ -19,6 +20,61 @@
     public class EmployeesController : ApiController
     {
         private DataContext db = new DataContext();
+
+        [HttpPost]
+        [Route("LoginFacebook")]
+        public async Task<IHttpActionResult> LoginFacebook(FacebookResponse profile)
+        {
+            try
+            {
+                var employee = await db.Employees.Where(e => e.Email == profile.Id).FirstOrDefaultAsync();
+                if (employee == null)
+                {
+                    employee = new Employee
+                    {
+                        Email = profile.Id,
+                        FirstName = profile.FirstName,
+                        LastName = profile.LastName,
+                        Picture = profile.Picture.Data.Url,
+                        DocumentTypeId = 1,
+                        LoginTypeId = 2,
+                    };
+
+                    db.Employees.Add(employee);
+                    CreateUserASP(profile.Id, "User", profile.Id);
+                }
+                else
+                {
+                    employee.FirstName = profile.FirstName;
+                    employee.LastName = profile.LastName;
+                    employee.Picture = profile.Picture.Data.Url;
+                    db.Entry(employee).State = EntityState.Modified;
+                }
+
+                await db.SaveChangesAsync();
+                return Ok(true);
+            }
+            catch (DbEntityValidationException e)
+            {
+                var message = string.Empty;
+                foreach (var eve in e.EntityValidationErrors)
+                {
+                    message = string.Format("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+                        eve.Entry.Entity.GetType().Name, eve.Entry.State);
+                    foreach (var ve in eve.ValidationErrors)
+                    {
+                        message += string.Format("\n- Property: \"{0}\", Error: \"{1}\"",
+                            ve.PropertyName, ve.ErrorMessage);
+                    }
+                }
+
+                return BadRequest(message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
         [HttpPost]
         [Route("PasswordRecovery")]
@@ -60,9 +116,9 @@
                 var response2 = await userManager.AddPasswordAsync(userASP.Id, newPassword);
                 if (response2.Succeeded)
                 {
-                    var subject = "Soccer App - Password Recovery";
+                    var subject = "TATA App - Password Recovery";
                     var body = string.Format(@"
-                        <h1>Soccer App - Password Recovery</h1>
+                        <h1>TATA App - Password Recovery</h1>
                         <p>Your new password is: <strong>{0}</strong></p>
                         <p>Please, don't forget change it for one easy remember for you.",
                         newPassword);

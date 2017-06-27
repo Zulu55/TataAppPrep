@@ -21,21 +21,15 @@ namespace TataApp.Domain
         public string LastName { get; set; }
 
         [Display(Name = "Employee Code")]
-        [Index("Employee_EmployeeCode_Index", IsUnique = true)]
         public int EmployeeCode { get; set; }
 
-        [Required(ErrorMessage = "The field {0} is required")]
         [Display(Name = "Document Type")]
-        [Index("Employee_DocumentTypeId_Document_Index", IsUnique = true, Order = 1)]
         public int DocumentTypeId { get; set; }
 
-        [Required(ErrorMessage = "The field {0} is required")]
         [Display(Name = "Login Type")]
         public int LoginTypeId { get; set; }
 
-        [Required(ErrorMessage = "The field {0} is required")]
         [MaxLength(20, ErrorMessage = "The maximun length for field {0} is {1} characters")]
-        [Index("Employee_DocumentTypeId_Document_Index", IsUnique = true, Order = 2)]
         [Display(Name = "Document")]
         public string Document { get; set; }
 

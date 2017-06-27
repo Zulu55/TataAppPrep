@@ -1,5 +1,6 @@
 ﻿namespace TataApp.API.Controllers
 {
+    using Domain;
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
     using System.Linq;
@@ -7,7 +8,6 @@
     using System.Threading.Tasks;
     using System.Web.Http;
     using System.Web.Http.Description;
-    using TataApp.Domain;
 
     public class DocumentTypesController : ApiController
     {
