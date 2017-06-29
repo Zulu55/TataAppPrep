@@ -4,9 +4,11 @@
     using Helpers;
     using Microsoft.AspNet.Identity;
     using Microsoft.AspNet.Identity.EntityFramework;
+    using Microsoft.Azure.NotificationHubs;
     using Models;
     using Newtonsoft.Json.Linq;
     using System;
+    using System.Collections.Generic;
     using System.Data;
     using System.Data.Entity;
     using System.Data.Entity.Validation;
@@ -138,6 +140,56 @@
 
         [Authorize]
         [HttpPost]
+        [Route("SendNotification")]
+        public async Task<IHttpActionResult> SendNotification(JObject form)
+        {
+            var from = string.Empty;
+            var to = string.Empty;
+            var message = string.Empty;
+            dynamic jsonObject = form;
+
+            try
+            {
+                from = jsonObject.From.Value;
+                to = jsonObject.To.Value;
+                message = jsonObject.Message.Value;
+            }
+            catch
+            {
+                return BadRequest("Incorrect call.");
+            }
+
+            var employeeFrom = db.Employees.Find(int.Parse(from));
+            if (employeeFrom == null)
+            {
+                return BadRequest("Employee from does not exits.");
+            }
+
+            var employeeTo = db.Employees.Find(int.Parse(to));
+            if (employeeTo == null)
+            {
+                return BadRequest("Employee to does not exits.");
+            }
+
+            try
+            {
+                var endPoint = "Endpoint=sb://tataapphub.servicebus.windows.net/;SharedAccessKeyName=DefaultFullSharedAccessSignature;SharedAccessKey=YU3JHje7mazlgYqlCvre8KbWIvL9vehKyYgM2JKya8U=";
+                var hubName = "TataApp";
+                var hub = NotificationHubClient.CreateClientFromConnectionString(endPoint, hubName);
+                var messageToSend = string.Format("{0}, Said: {1}.", employeeFrom.FullName, message);
+                var tags = new List<string>();
+                tags.Add(string.Format("userId:{0}", to));
+                await hub.SendGcmNativeNotificationAsync("{ \"data\" : {\"Message\":\"" + messageToSend + "\"}}", tags);
+                return Ok(true);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [Authorize]
+        [HttpPost]
         [Route("ChangePassword")]
         public async Task<IHttpActionResult> ChangePassword(JObject form)
         {
@@ -213,17 +265,7 @@
                 return BadRequest("Incorrect call");
             }
 
-            Employee employee = null;
-            if (emailOrCode.IndexOf('@') != -1)
-            {
-                employee = await db.Employees.Where(e => e.Email.ToLower() == emailOrCode.ToLower()).FirstOrDefaultAsync();
-            }
-            else
-            {
-                int code;
-                int.TryParse(emailOrCode, out code);
-                employee = await db.Employees.Where(e => e.EmployeeCode == code).FirstOrDefaultAsync();
-            }
+            var employee = await db.Employees.Where(e => e.Email.ToLower() == emailOrCode.ToLower()).FirstOrDefaultAsync();
 
             if (employee == null)
             {
